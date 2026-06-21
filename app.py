@@ -1,4 +1,3 @@
-import math
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -7,72 +6,74 @@ import streamlit as st
 # ----------------------------------------------------------------------------
 # Alapadatok
 # ----------------------------------------------------------------------------
-START_DATE = date(2026, 5, 4)                 # az IVF kezelés kezdete -> 1. hét eleje
-DUE_DATE = START_DATE + timedelta(days=279)   # a 40. hét vége
+START_DATE = date(2026, 5, 4)  # az IVF kezelés kezdete -> 1. hét eleje
 
 HU_MONTHS = ["jan", "feb", "márc", "ápr", "máj", "jún",
              "júl", "aug", "szep", "okt", "nov", "dec"]
 
 MILESTONES = {
-    5:  ("🌱", "Beágyazódás", "Az embrió ezen a héten ágyazódik be a méhnyálkahártyába."),
-    6:  ("💓", "Szívhang", "Ultrahangon már hallható lehet a szívhang."),
-    8:  ("🔬", "Első ultrahang", "Az első részletes vizsgálat ideje."),
-    10: ("🧬", "Korai szűrés", "Innentől elérhető a NIPT / korai szűrővizsgálat."),
-    12: ("✨", "1. trimeszter vége", "NT-mérés, a kockázatok jelentősen csökkennek."),
-    16: ("🦋", "Első mozgások", "Hamarosan érzékelhetővé válik a baba mozgása."),
-    20: ("🔍", "Morfológiai UH", "Nagy részletességű szűrő ultrahang."),
-    24: ("🏥", "Életképességi határ", "A magzat elérte az életképesség orvosi határát."),
-    28: ("🌙", "3. trimeszter", "Kezdődik az utolsó szakasz."),
-    34: ("🎯", "Erős fejlődés", "Intenzív súlygyarapodás és érés zajlik."),
-    37: ("✅", "Érett terhesség", "A baba innentől éretten születhetne."),
-    40: ("🎉", "Várható szülés", "A kiszámított határnap."),
+    5:  ("🌱", "Embrió beágyazódás (~5. hét)"),
+    6:  ("💓", "Szívhang hallható (ultrahang)"),
+    8:  ("🔬", "Első ultrahang (általában)"),
+    10: ("🧬", "NIPT / Duplex ultrahang lehetséges"),
+    12: ("✨", "1. trimeszter vége · NT-mérés"),
+    16: ("🦋", "Első mozgások érzékelhetők"),
+    20: ("🔍", "Nagy morfológiai ultrahang"),
+    24: ("🏥", "Életképességi határ elérve"),
+    28: ("🌙", "3. trimeszter kezdete"),
+    34: ("🎯", "Intenzív fejlődési fázis"),
+    37: ("✅", "Érett terhesség (37. hét)"),
+    40: ("🎉", "Várható szülési dátum"),
 }
 
 SIZES = {
-    4:  ("🟤", "mákszem", "🐜", "hangya"),
-    5:  ("⚪", "szezámmag", "🐞", "katicabogár"),
-    6:  ("🫘", "lencse", "🐭", "egér"),
-    7:  ("🫐", "áfonya", "🐹", "hörcsög"),
-    8:  ("🍇", "szőlőszem", "🐸", "béka"),
-    9:  ("🍒", "cseresznye", "🐤", "kiscsibe"),
-    10: ("🍓", "nagy eper", "🐰", "törpenyúl"),
-    11: ("🫒", "fige", "🦔", "sündisznó"),
-    12: ("🟢", "lime", "🐿️", "mókus"),
-    13: ("🍑", "őszibarack", "🐦", "papagáj"),
-    14: ("🍋", "citrom", "🐈", "kiscica"),
-    15: ("🍎", "alma", "🐇", "üregi nyúl"),
-    16: ("🥑", "avokádó", "🐕", "kiskutya"),
-    17: ("🍐", "körte", "🦝", "mosómedve"),
-    18: ("🫑", "paprika", "🦊", "rókakölyök"),
-    19: ("🥭", "mangó", "🐢", "teknős"),
-    20: ("🍌", "banán", "🐧", "pingvinfióka"),
-    21: ("🥕", "sárgarépa", "🦦", "vidra"),
-    22: ("🥒", "cukkini", "🦉", "bagolyfióka"),
-    23: ("🍈", "grapefruit", "🐑", "báránykölyök"),
-    24: ("🌽", "kukoricacső", "🐖", "kismalac"),
-    25: ("🥦", "karfiol", "🦫", "hódkölyök"),
-    26: ("🥬", "fejes saláta", "🦌", "őzgida"),
-    27: ("🍆", "padlizsán", "🐐", "kecskegida"),
-    28: ("🎃", "kis sütőtök", "🐻", "medvebocs"),
-    29: ("🥥", "kókusz", "🦘", "kengurubébi"),
-    30: ("🍍", "ananász", "🐼", "pandabocs"),
-    31: ("🍈", "sárgadinnye", "🐯", "tigriskölyök"),
-    32: ("🍈", "nagy sárgadinnye", "🦁", "oroszlánkölyök"),
-    33: ("🎃", "nagy sütőtök", "🐨", "koalabocs"),
-    34: ("🥥", "nagy kókusz", "🐘", "elefántborjú"),
-    35: ("🍉", "kis görögdinnye", "🐂", "borjú"),
-    36: ("🍉", "görögdinnye", "🐎", "csikó"),
-    37: ("🍉", "nagy görögdinnye", "🦬", "bölénybocs"),
-    38: ("🥬", "nagy fejes káposzta", "🐫", "tevecsikó"),
-    39: ("🎃", "nagy tök", "🦒", "zsiráfbébi"),
-    40: ("🍉", "érett görögdinnye", "🐘", "kiselefánt"),
-    41: ("🍉", "extra nagy görögdinnye", "🦣", "mamutbébi"),
-    42: ("🎃", "óriás sütőtök", "🐳", "bálnabébi"),
+    4:  ("🌾", "mákszem (~1 mm)"),
+    5:  ("🍎", "almamag (~2 mm)"),
+    6:  ("🫛", "lencse (~5 mm)"),
+    7:  ("🫐", "áfonya (~1 cm)"),
+    8:  ("🫘", "vesebab (~1,6 cm)"),
+    9:  ("🍇", "szőlőszem (~2,3 cm)"),
+    10: ("🍓", "eper (~3 cm)"),
+    11: ("🍈", "füge (~4 cm)"),
+    12: ("🍋", "lime (~5,4 cm)"),
+    13: ("🫛", "borsóhüvely (~7,4 cm)"),
+    14: ("🍋", "citrom (~8,7 cm)"),
+    15: ("🍎", "alma (~10 cm)"),
+    16: ("🥑", "avokádó (~11,6 cm)"),
+    17: ("🍐", "körte (~13 cm)"),
+    18: ("🫑", "paprika (~14 cm)"),
+    19: ("🍅", "nagy paradicsom (~15 cm)"),
+    20: ("🍌", "banán (~25 cm*)"),
+    21: ("🥕", "sárgarépa (~27 cm)"),
+    22: ("🥥", "kókuszdió (~28 cm)"),
+    23: ("🍆", "padlizsán (~29 cm)"),
+    24: ("🌽", "kukoricacső (~30 cm)"),
+    25: ("🥬", "karalábé (~34 cm)"),
+    26: ("🥒", "uborka (~35 cm)"),
+    27: ("🥦", "karfiol (~36 cm)"),
+    28: ("🍆", "nagy padlizsán (~37 cm)"),
+    29: ("🎃", "sütőtök (~38 cm)"),
+    30: ("🥬", "káposzta (~40 cm)"),
+    31: ("🥥", "nagy kókusz (~41 cm)"),
+    32: ("🍈", "sárgadinnye (~43 cm)"),
+    33: ("🍍", "ananász (~44 cm)"),
+    34: ("🍈", "kantalupdinnye (~45 cm)"),
+    35: ("🍯", "mézdinnye (~46 cm)"),
+    36: ("🥬", "római saláta (~47 cm)"),
+    37: ("🥬", "mángold (~48,5 cm)"),
+    38: ("🎃", "kisebb tök (~49,5 cm)"),
+    39: ("🍉", "kisebb görögdinnye (~50,5 cm)"),
+    40: ("🎃", "nagy tök (~51 cm)"),
+    41: ("🍉", "görögdinnye (~51,5 cm)"),
+    42: ("🍉", "nagy görögdinnye (~52 cm)"),
 }
 
-
-def fmt_date(d: date) -> str:
-    return f"{d.year}. {HU_MONTHS[d.month - 1]}. {d.day}."
+TRIM_COLORS = {
+    1: {"bg": "#FEF0F2", "border": "#F4A4B0", "dot": "#D96B7A", "label": "#C4566A"},
+    2: {"bg": "#FEF5ED", "border": "#F0C4A0", "dot": "#D4885A", "label": "#B87040"},
+    3: {"bg": "#EDF5F0", "border": "#A8D4B4", "dot": "#5A9E6E", "label": "#3D7D52"},
+}
+TRIM_NAMES = {1: "1. trimeszter", 2: "2. trimeszter", 3: "3. trimeszter"}
 
 
 def week_range(week: int):
@@ -89,261 +90,359 @@ def trimester_of(week: int) -> int:
     return 3
 
 
+def fmt_short(d: date, force_year: bool = False) -> str:
+    year = f"{d.year}. " if (d.year != 2026 or force_year) else ""
+    return f"{year}{HU_MONTHS[d.month - 1]}. {d.day}."
+
+
+def fmt_range(s: date, e: date) -> str:
+    same_month = s.month == e.month and s.year == e.year
+    if same_month:
+        year = f"{s.year}. " if s.year != 2026 else ""
+        return f"{year}{HU_MONTHS[s.month - 1]}. {s.day}–{e.day}."
+    return f"{fmt_short(s)} – {fmt_short(e, e.year != 2026)}"
+
+
 # ----------------------------------------------------------------------------
 # Számítás
 # ----------------------------------------------------------------------------
 today = datetime.now(ZoneInfo("Europe/Budapest")).date()
 days_along = (today - START_DATE).days
-current_week = max(1, days_along // 7 + 1)
-display_week = min(max(current_week, 4), 42)
-days_to_due = (DUE_DATE - today).days
-progress = min(max(current_week / 40, 0), 1)
+raw_week = days_along // 7 + 1
+current_week = min(max(raw_week, 1), 42)
+is_overdue = raw_week > 42
 trimester = trimester_of(min(current_week, 40))
+progress = min(max(round((current_week - 1) / 40 * 100), 0), 100)
+
+cw_start, cw_end = week_range(current_week)
+due_date = week_range(40)[1]
+t1_start, t1_end = week_range(1)[0], week_range(13)[1]
+t2_start, t2_end = week_range(14)[0], week_range(27)[1]
+t3_start, t3_end = week_range(28)[0], week_range(40)[1]
 
 # ----------------------------------------------------------------------------
 # Beállítások / stílus
 # ----------------------------------------------------------------------------
-st.set_page_config(page_title="Hányadik héten?", page_icon="🌱", layout="centered")
+st.set_page_config(page_title="Terhességi naptár", page_icon="🌸", layout="centered")
+
+if "show_all" not in st.session_state:
+    st.session_state.show_all = False
 
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap');
-
     #MainMenu, header, footer {visibility: hidden;}
 
     .stApp {
-        background-color: #FBF7F0;
-        font-family: 'Inter', sans-serif;
-        color: #2E2A26;
+        background-color: #FAF7F4;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+        color: #2D2420;
     }
-    .block-container { padding-top: 2.4rem; max-width: 560px; }
+    .block-container { padding-top: 1.6rem; padding-bottom: 2rem; max-width: 480px; }
 
-    .eyebrow {
-        font-size: 0.78rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: #5B7A63;
-        font-weight: 600;
-        text-align: center;
-        margin-bottom: 0.3rem;
+    .hero {
+        background: linear-gradient(145deg, #D96B7A 0%, #E8A08A 100%);
+        border-radius: 20px;
+        padding: 22px 20px;
+        color: white;
+        margin-bottom: 16px;
+        position: relative;
+        overflow: hidden;
     }
-    .page-title {
-        font-family: 'Fraunces', serif;
-        font-size: 1.7rem;
-        font-weight: 600;
-        text-align: center;
-        margin: 0 0 1.1rem 0;
-        color: #2E2A26;
+    .hero::after {
+        content: "";
+        position: absolute; right: -20px; top: -20px;
+        width: 120px; height: 120px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 50%;
     }
-    .ring-wrap { display: flex; justify-content: center; margin: 0.2rem 0 0.6rem; }
-    .ring-caption {
-        text-align: center; font-size: 0.95rem; color: #6b6660; margin-bottom: 1.4rem;
-    }
-    .ring-caption b { color: #2E2A26; }
-
-    .trimester-wrap { margin: 0 0 1.6rem 0; }
-    .trimester-bar { display: flex; gap: 6px; }
-    .trimester-seg { flex: 1; height: 8px; border-radius: 4px; background: #E3DDD2; }
-    .trimester-seg.active { background: #5B7A63; }
-    .trimester-labels {
-        display: flex; justify-content: space-between; font-size: 0.72rem;
-        color: #8a8479; margin-top: 0.35rem;
-    }
+    .hero-eyebrow { font-size: 12px; opacity: 0.85; letter-spacing: 0.04em; text-transform: uppercase; }
+    .hero-title { font-size: 26px; font-weight: 800; margin: 6px 0 4px; letter-spacing: -0.5px; }
+    .hero-sub { font-size: 13px; opacity: 0.85; }
+    .hero-date { font-size: 22px; font-weight: 700; margin-top: 2px; }
+    .hero-pills { display: flex; gap: 10px; margin-top: 14px; position: relative; z-index: 1; }
+    .hero-pill { background: rgba(255,255,255,0.18); border-radius: 8px; padding: 5px 8px; flex: 1; }
+    .hero-pill-label { font-size: 10px; font-weight: 700; opacity: 0.8; }
+    .hero-pill-range { font-size: 10px; opacity: 0.9; margin-top: 1px; }
 
     .card {
-        background: #EDF1EA;
-        border-radius: 18px;
-        padding: 1.1rem 1.3rem;
-        margin-bottom: 1rem;
+        background: white;
+        border-radius: 16px;
+        padding: 16px 16px 14px;
+        margin-bottom: 16px;
     }
-    .card-title {
-        font-family: 'Fraunces', serif;
-        font-size: 1.05rem;
-        font-weight: 600;
-        margin-bottom: 0.7rem;
-        color: #2E2A26;
-    }
-    .size-row { display: flex; gap: 1.4rem; }
-    .size-item { flex: 1; text-align: center; }
-    .size-emoji { font-size: 2.1rem; display: block; margin-bottom: 0.2rem; }
-    .size-name { font-size: 0.92rem; color: #44403a; }
-    .size-label { font-size: 0.72rem; color: #8a8479; text-transform: uppercase; letter-spacing: 0.06em; }
-
-    .milestone-card {
-        background: #F6E9EA;
-        border-left: 4px solid #C97B84;
+    .card-soft {
+        background: white;
         border-radius: 14px;
-        padding: 0.9rem 1.2rem;
-        margin-bottom: 1rem;
+        padding: 14px 14px 10px;
+        margin-bottom: 16px;
     }
-    .milestone-card .card-title { color: #8a4a52; margin-bottom: 0.3rem; }
 
-    .week-row {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 0.55rem 0.3rem; border-bottom: 1px solid #E9E4D9; font-size: 0.9rem;
-    }
-    .week-row:last-child { border-bottom: none; }
-    .week-row.current { background: #F1ECDF; border-radius: 10px; font-weight: 600; }
-    .week-num { color: #5B7A63; font-weight: 600; width: 2.2rem; flex-shrink: 0; }
-    .week-dates { color: #8a8479; font-size: 0.78rem; flex: 1; text-align: center; }
-    .week-size { text-align: right; flex-shrink: 0; }
+    .cw-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .cw-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 2px; }
+    .cw-week { font-size: 32px; font-weight: 900; line-height: 1; }
+    .cw-range { font-size: 13px; color: #9B8680; margin-top: 4px; }
+    .cw-trim { font-size: 11px; color: #9B8680; text-align: right; }
+    .cw-pct { font-size: 28px; font-weight: 800; text-align: right; }
+    .cw-pct span { font-size: 14px; }
+    .cw-pctlabel { font-size: 11px; color: #9B8680; text-align: right; }
 
-    .footer-note {
-        text-align: center; font-size: 0.76rem; color: #a39d90; margin-top: 1.6rem;
+    .progress-track { height: 6px; background: #F0EAE6; border-radius: 3px; margin-top: 12px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 3px; }
+
+    .fruit-box { margin-top: 10px; border-radius: 8px; padding: 7px 10px; }
+    .fruit-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    .fruit-value { font-size: 14px; color: #2D2420; margin-top: 2px; }
+
+    .ms-box { margin-top: 10px; border-radius: 8px; padding: 7px 10px; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+    .overdue-note { margin-top: 10px; border-radius: 8px; padding: 7px 10px; font-size: 13px; background: #FEF5ED; color: #B87040; }
+
+    .qr-heading { font-size: 11px; font-weight: 700; color: #9B8680; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+    .qr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .qr-item { border-radius: 8px; padding: 8px 10px; }
+    .qr-label { font-size: 11px; font-weight: 600; }
+    .qr-date { font-size: 13px; font-weight: 700; color: #2D2420; margin-top: 1px; }
+
+    div[data-testid="stButton"] button[kind="primary"] {
+        background-color: #D96B7A; border-color: #D96B7A; color: white;
     }
+    div[data-testid="stButton"] button[kind="primary"]:hover {
+        background-color: #c65d6c; border-color: #c65d6c; color: white;
+    }
+    div[data-testid="stButton"] button[kind="secondary"] {
+        background-color: white; color: #9B8680; border-color: #F0E8E4;
+    }
+    div[data-testid="stButton"] button[kind="secondary"]:hover {
+        border-color: #D96B7A; color: #D96B7A;
+    }
+
+    .trim-divider {
+        font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+        padding: 12px 4px 4px; margin-top: 4px;
+    }
+    .week-card { border-radius: 10px; padding: 8px 12px; margin-bottom: 4px; }
+    .week-top { display: flex; justify-content: space-between; align-items: center; }
+    .week-left { display: flex; align-items: center; gap: 8px; }
+    .week-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .week-num { font-size: 15px; }
+    .badge { font-size: 10px; color: white; border-radius: 4px; padding: 1px 6px; font-weight: 700; }
+    .week-dates { font-size: 12px; color: #9B8680; }
+    .week-ms { margin-top: 5px; padding-left: 16px; font-size: 12px; display: flex; align-items: center; gap: 5px; }
+    .week-size { margin-top: 5px; padding-left: 16px; font-size: 11.5px; color: #9B8680; }
+
+    .footer-note { text-align: center; font-size: 11px; color: #BEB4B0; margin-top: 20px; }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 # ----------------------------------------------------------------------------
-# Fejléc + növedékgyűrű
+# Hero
 # ----------------------------------------------------------------------------
-st.markdown('<div class="eyebrow">babanapló</div>', unsafe_allow_html=True)
-st.markdown('<div class="page-title">Hányadik héten?</div>', unsafe_allow_html=True)
-
-r = 86
-circumference = 2 * math.pi * r
-filled = circumference * progress
-ring_svg = f"""
-<div class="ring-wrap">
-<svg width="220" height="220" viewBox="0 0 220 220">
-  <circle cx="110" cy="110" r="{r}" fill="none" stroke="#E3DDD2" stroke-width="14" />
-  <circle cx="110" cy="110" r="{r}" fill="none" stroke="#5B7A63" stroke-width="14"
-    stroke-linecap="round"
-    stroke-dasharray="{filled:.1f} {circumference:.1f}"
-    transform="rotate(-90 110 110)" />
-  <text x="110" y="102" text-anchor="middle"
-        style="font-family:'Fraunces',serif; font-size:46px; font-weight:600; fill:#2E2A26;">{min(current_week, 40)}.</text>
-  <text x="110" y="130" text-anchor="middle"
-        style="font-family:'Inter',sans-serif; font-size:15px; fill:#6b6660;">hét</text>
-</svg>
-</div>
-"""
-st.markdown(ring_svg, unsafe_allow_html=True)
-
-if days_to_due >= 0:
-    due_caption = f"Kb. <b>{days_to_due}</b> nap múlva érkezik · várható időpont: <b>{fmt_date(DUE_DATE)}</b>"
-else:
-    due_caption = f"A kiírt határnap ({fmt_date(DUE_DATE)}) már elmúlt — hajrá! 🎉"
-st.markdown(f'<div class="ring-caption">{due_caption}</div>', unsafe_allow_html=True)
-
-segs = "".join(
-    f'<div class="trimester-seg{" active" if i + 1 <= trimester else ""}"></div>'
-    for i in range(3)
-)
 st.markdown(
     f"""
-    <div class="trimester-wrap">
-      <div class="trimester-bar">{segs}</div>
-      <div class="trimester-labels"><span>I. trimeszter</span><span>II. trimeszter</span><span>III. trimeszter</span></div>
+    <div class="hero">
+        <div class="hero-eyebrow">IVF kezdete: {fmt_short(START_DATE, True)}</div>
+        <div class="hero-title">Terhességi naptár</div>
+        <div class="hero-sub">Várható szülési dátum (VSD)</div>
+        <div class="hero-date">{fmt_short(due_date, True)}</div>
+        <div class="hero-pills">
+            <div class="hero-pill">
+                <div class="hero-pill-label">1. trimeszter</div>
+                <div class="hero-pill-range">{fmt_range(t1_start, t1_end)}</div>
+            </div>
+            <div class="hero-pill">
+                <div class="hero-pill-label">2. trimeszter</div>
+                <div class="hero-pill-range">{fmt_range(t2_start, t2_end)}</div>
+            </div>
+            <div class="hero-pill">
+                <div class="hero-pill-label">3. trimeszter</div>
+                <div class="hero-pill-range">{fmt_range(t3_start, t3_end)}</div>
+            </div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
 # ----------------------------------------------------------------------------
-# Mekkora most a baba?
+# Jelen heti kártya
 # ----------------------------------------------------------------------------
-if current_week < 4:
-    size_card = """
-    <div class="card">
-      <div class="card-title">Mekkora most a baba?</div>
-      <div style="text-align:center; color:#6b6660; font-size:0.92rem;">
-        Még csak most kezdődött az utazás — pár hét múlva itt lesz az első hasonlat. 🌱
-      </div>
-    </div>
-    """
-elif current_week > 42:
-    size_card = """
-    <div class="card">
-      <div class="card-title">Mekkora most a baba?</div>
-      <div style="text-align:center; color:#6b6660; font-size:0.92rem;">
-        Itt a vége — mostanra már valószínűleg meg is érkezett! 🎉
-      </div>
-    </div>
-    """
-else:
-    f_emoji, f_name, a_emoji, a_name = SIZES[display_week]
-    size_card = f"""
-    <div class="card">
-      <div class="card-title">Mekkora most a baba?</div>
-      <div class="size-row">
-        <div class="size-item">
-          <span class="size-emoji">{f_emoji}</span>
-          <div class="size-name">{f_name}</div>
-          <div class="size-label">gyümölcsben</div>
-        </div>
-        <div class="size-item">
-          <span class="size-emoji">{a_emoji}</span>
-          <div class="size-name">{a_name}</div>
-          <div class="size-label">kedves hasonlat</div>
-        </div>
-      </div>
-    </div>
-    """
-st.markdown(size_card, unsafe_allow_html=True)
+c = TRIM_COLORS[trimester]
+fruit = SIZES.get(current_week)
+milestone = MILESTONES.get(current_week)
 
-# ----------------------------------------------------------------------------
-# Mérföldkő kiemelés
-# ----------------------------------------------------------------------------
-if current_week in MILESTONES:
-    icon, title, text = MILESTONES[current_week]
-    st.markdown(
-        f"""
-        <div class="milestone-card">
-          <div class="card-title">{icon} {title} — ezen a héten</div>
-          <div style="font-size:0.9rem; color:#5c4348;">{text}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-else:
-    upcoming = sorted(w for w in MILESTONES if w > current_week)
-    if upcoming:
-        nw = upcoming[0]
-        icon, title, _ = MILESTONES[nw]
-        weeks_away = nw - current_week
-        st.markdown(
-            f"""
-            <div class="milestone-card">
-              <div class="card-title">{icon} Következő mérföldkő: {title}</div>
-              <div style="font-size:0.9rem; color:#5c4348;">{weeks_away} hét múlva, a {nw}. héten.</div>
+fruit_html = ""
+if fruit:
+    f_emoji, f_text = fruit
+    fruit_html = f"""
+    <div class="fruit-box" style="background:{c['bg']};">
+        <div class="fruit-label" style="color:{c['label']};">Gyümölcsben</div>
+        <div class="fruit-value">{f_emoji} {f_text}</div>
+    </div>
+    """
+
+milestone_html = ""
+if milestone:
+    m_icon, m_text = milestone
+    milestone_html = f"""
+    <div class="ms-box" style="background:{c['bg']}; color:{c['label']};">
+        <span style="font-size:16px;">{m_icon}</span>{m_text}
+    </div>
+    """
+
+overdue_html = ""
+if is_overdue:
+    overdue_html = """
+    <div class="overdue-note">A 42. hét is letelt — addig is, jó eséllyel már meg is érkezett a baba! 🎉</div>
+    """
+
+st.markdown(
+    f"""
+    <div class="card" style="border: 2px solid {c['border']}; box-shadow: 0 4px 20px {c['border']}55;">
+        <div class="cw-top">
+            <div>
+                <div class="cw-tag" style="color:{c['label']};">Most tartunk itt</div>
+                <div class="cw-week" style="color:{c['dot']};">{current_week}. hét</div>
+                <div class="cw-range">{fmt_range(cw_start, cw_end)}</div>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+            <div>
+                <div class="cw-trim">{trimester}. trimeszter</div>
+                <div class="cw-pct" style="color:{c['dot']};">{progress}<span>%</span></div>
+                <div class="cw-pctlabel">haladás</div>
+            </div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" style="width:{progress}%; background: linear-gradient(90deg, {c['dot']}, {c['border']});"></div>
+        </div>
+        {fruit_html}
+        {milestone_html}
+        {overdue_html}
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ----------------------------------------------------------------------------
-# Heti napló
+# Fontos mérföldkövek - gyors áttekintés
 # ----------------------------------------------------------------------------
-st.markdown('<div class="card-title">Heti napló</div>', unsafe_allow_html=True)
-show_all = st.toggle("Összes hét megjelenítése (ne csak a mérföldköveket)", value=False)
+key_weeks = [
+    ("12. hét (NT)", 12),
+    ("20. hét (nagy UH)", 20),
+    ("24. hét (életképesség)", 24),
+    ("28. hét (3. trim.)", 28),
+    ("37. hét (érett)", 37),
+    ("40. hét (VSD)", 40),
+]
+qr_items = ""
+for label, w in key_weeks:
+    wc = TRIM_COLORS[trimester_of(w)]
+    w_start, _ = week_range(w)
+    qr_items += f"""
+    <div class="qr-item" style="background:{wc['bg']};">
+        <div class="qr-label" style="color:{wc['label']};">{label}</div>
+        <div class="qr-date">{fmt_short(w_start, w_start.year != 2026)}</div>
+    </div>
+    """
 
-rows_html = []
+st.markdown(
+    f"""
+    <div class="card-soft">
+        <div class="qr-heading">Fontos mérföldkövek</div>
+        <div class="qr-grid">{qr_items}</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ----------------------------------------------------------------------------
+# Kattintható váltógombok
+# ----------------------------------------------------------------------------
+col1, col2 = st.columns(2)
+with col1:
+    clicked = st.button(
+        "Mérföldkövek", use_container_width=True,
+        type="primary" if not st.session_state.show_all else "secondary",
+    )
+    if clicked and st.session_state.show_all:
+        st.session_state.show_all = False
+        st.rerun()
+with col2:
+    clicked = st.button(
+        "Mind a 42 hét", use_container_width=True,
+        type="primary" if st.session_state.show_all else "secondary",
+    )
+    if clicked and not st.session_state.show_all:
+        st.session_state.show_all = True
+        st.rerun()
+
+show_all = st.session_state.show_all
+
+# ----------------------------------------------------------------------------
+# Heti lista
+# ----------------------------------------------------------------------------
+rows = []
+prev_trim = None
 for w in range(1, 43):
-    start, end = week_range(w)
-    is_milestone = w in MILESTONES
-    is_current = w == current_week
-    if not show_all and not is_milestone and not is_current:
+    w_start, w_end = week_range(w)
+    w_trim = trimester_of(w)
+    w_is_current = w == current_week
+    w_is_past = today > w_end
+    w_milestone = MILESTONES.get(w)
+    w_size = SIZES.get(w)
+
+    if not (show_all or w_is_current or w_milestone or w == 40):
         continue
-    size = SIZES.get(w)
-    size_txt = f"{size[0]} {size[1]}" if size else "—"
-    milestone_icon = f" {MILESTONES[w][0]}" if is_milestone else ""
-    current_cls = " current" if is_current else ""
-    rows_html.append(
+
+    wc = TRIM_COLORS[w_trim]
+
+    if show_all and (w == 1 or (prev_trim is not None and prev_trim != w_trim)):
+        rows.append(f'<div class="trim-divider" style="color:{wc["label"]};">{TRIM_NAMES[w_trim]}</div>')
+    prev_trim = w_trim
+
+    bg = wc["bg"] if w_is_current else "white"
+    border = f"1.5px solid {wc['border']}" if w_is_current else "1px solid #F0E8E4"
+    opacity = "0.5" if (w_is_past and not w_is_current) else "1"
+    dot_color = wc["dot"] if w_is_current else ("#D4C8C4" if w_is_past else wc["border"])
+    num_color = wc["dot"] if w_is_current else "#2D2420"
+    num_weight = "800" if w_is_current else ("600" if w_milestone else "500")
+
+    badges = ""
+    if w_is_current:
+        badges += f'<span class="badge" style="background:{wc["dot"]};">MOST</span>'
+    if w == 40:
+        badges += '<span class="badge" style="background:#5A9E6E;">VSD</span>'
+
+    ms_line = ""
+    if w_milestone:
+        m_icon, m_text = w_milestone
+        ms_line = f'<div class="week-ms" style="color:{wc["label"]};"><span>{m_icon}</span><span>{m_text}</span></div>'
+
+    size_line = ""
+    if w_size:
+        s_emoji, s_text = w_size
+        size_line = f'<div class="week-size">{s_emoji} {s_text}</div>'
+
+    rows.append(
         f"""
-        <div class="week-row{current_cls}">
-          <span class="week-num">{w}.</span>
-          <span class="week-dates">{fmt_date(start)} – {fmt_date(end)}</span>
-          <span class="week-size">{size_txt}{milestone_icon}</span>
+        <div class="week-card" style="background:{bg}; border:{border}; opacity:{opacity};">
+            <div class="week-top">
+                <div class="week-left">
+                    <div class="week-dot" style="background:{dot_color};"></div>
+                    <span class="week-num" style="color:{num_color}; font-weight:{num_weight};">{w}. hét</span>
+                    {badges}
+                </div>
+                <span class="week-dates">{fmt_range(w_start, w_end)}</span>
+            </div>
+            {ms_line}
+            {size_line}
         </div>
         """
     )
-st.markdown(f'<div class="card">{"".join(rows_html)}</div>', unsafe_allow_html=True)
+
+st.markdown("".join(rows), unsafe_allow_html=True)
 
 st.markdown(
-    '<div class="footer-note">Játékos kísérő, nem orvosi forrás — a hiteles adatokért mindig a kezelőorvos/szülész irányadó. 💛</div>',
+    '<div class="footer-note">Tájékoztató jellegű számítás · kérdéseiddel fordulj orvosodhoz</div>',
     unsafe_allow_html=True,
 )
