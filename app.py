@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ----------------------------------------------------------------------------
 # Alapadatok
@@ -124,6 +125,30 @@ t3_start, t3_end = week_range(28)[0], week_range(40)[1]
 # Beállítások / stílus
 # ----------------------------------------------------------------------------
 st.set_page_config(page_title="Terhességi naptár", page_icon="🌸", layout="centered")
+
+# Kísérlet az apple-touch-icon beillesztésére a Safari "Kezdőképernyőhöz hozzáadás"
+# funkciójához. Ez Streamlit Cloudon nem garantált (lásd a chatben írt megjegyzést),
+# de ártalmatlan, ha nem sikerül.
+components.html(
+    """
+    <script>
+    (function () {
+        try {
+            var doc = window.parent.document;
+            var href = window.parent.location.origin + "/app/static/apple-touch-icon.png";
+            doc.querySelectorAll('link[rel="apple-touch-icon"]').forEach(function (el) {
+                el.remove();
+            });
+            var link = doc.createElement("link");
+            link.setAttribute("rel", "apple-touch-icon");
+            link.setAttribute("href", href);
+            doc.head.appendChild(link);
+        } catch (e) {}
+    })();
+    </script>
+    """,
+    height=0,
+)
 
 if "show_all" not in st.session_state:
     st.session_state.show_all = False
