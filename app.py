@@ -275,27 +275,30 @@ milestone = MILESTONES.get(current_week)
 fruit_html = ""
 if fruit:
     f_emoji, f_text = fruit
-    fruit_html = f"""
-    <div class="fruit-box" style="background:{c['bg']};">
-        <div class="fruit-label" style="color:{c['label']};">Gyümölcsben</div>
-        <div class="fruit-value">{f_emoji} {f_text}</div>
-    </div>
-    """
+    fruit_html = (
+        f'<div class="fruit-box" style="background:{c["bg"]};">'
+        f'<div class="fruit-label" style="color:{c["label"]};">Gyümölcsben</div>'
+        f'<div class="fruit-value">{f_emoji} {f_text}</div>'
+        f'</div>'
+    )
 
 milestone_html = ""
 if milestone:
     m_icon, m_text = milestone
-    milestone_html = f"""
-    <div class="ms-box" style="background:{c['bg']}; color:{c['label']};">
-        <span style="font-size:16px;">{m_icon}</span>{m_text}
-    </div>
-    """
+    milestone_html = (
+        f'<div class="ms-box" style="background:{c["bg"]}; color:{c["label"]};">'
+        f'<span style="font-size:16px;">{m_icon}</span>{m_text}'
+        f'</div>'
+    )
 
 overdue_html = ""
 if is_overdue:
-    overdue_html = """
-    <div class="overdue-note">A 42. hét is letelt — addig is, jó eséllyel már meg is érkezett a baba! 🎉</div>
-    """
+    overdue_html = (
+        '<div class="overdue-note">A 42. hét is letelt — addig is, '
+        'jó eséllyel már meg is érkezett a baba! 🎉</div>'
+    )
+
+extra_html = fruit_html + milestone_html + overdue_html
 
 st.markdown(
     f"""
@@ -315,9 +318,7 @@ st.markdown(
         <div class="progress-track">
             <div class="progress-fill" style="width:{progress}%; background: linear-gradient(90deg, {c['dot']}, {c['border']});"></div>
         </div>
-        {fruit_html}
-        {milestone_html}
-        {overdue_html}
+        {extra_html}
     </div>
     """,
     unsafe_allow_html=True,
@@ -338,12 +339,12 @@ qr_items = ""
 for label, w in key_weeks:
     wc = TRIM_COLORS[trimester_of(w)]
     w_start, _ = week_range(w)
-    qr_items += f"""
-    <div class="qr-item" style="background:{wc['bg']};">
-        <div class="qr-label" style="color:{wc['label']};">{label}</div>
-        <div class="qr-date">{fmt_short(w_start, w_start.year != 2026)}</div>
-    </div>
-    """
+    qr_items += (
+        f'<div class="qr-item" style="background:{wc["bg"]};">'
+        f'<div class="qr-label" style="color:{wc["label"]};">{label}</div>'
+        f'<div class="qr-date">{fmt_short(w_start, w_start.year != 2026)}</div>'
+        f'</div>'
+    )
 
 st.markdown(
     f"""
@@ -424,20 +425,18 @@ for w in range(1, 43):
         size_line = f'<div class="week-size">{s_emoji} {s_text}</div>'
 
     rows.append(
-        f"""
-        <div class="week-card" style="background:{bg}; border:{border}; opacity:{opacity};">
-            <div class="week-top">
-                <div class="week-left">
-                    <div class="week-dot" style="background:{dot_color};"></div>
-                    <span class="week-num" style="color:{num_color}; font-weight:{num_weight};">{w}. hét</span>
-                    {badges}
-                </div>
-                <span class="week-dates">{fmt_range(w_start, w_end)}</span>
-            </div>
-            {ms_line}
-            {size_line}
-        </div>
-        """
+        f'<div class="week-card" style="background:{bg}; border:{border}; opacity:{opacity};">'
+        f'<div class="week-top">'
+        f'<div class="week-left">'
+        f'<div class="week-dot" style="background:{dot_color};"></div>'
+        f'<span class="week-num" style="color:{num_color}; font-weight:{num_weight};">{w}. hét</span>'
+        f'{badges}'
+        f'</div>'
+        f'<span class="week-dates">{fmt_range(w_start, w_end)}</span>'
+        f'</div>'
+        f'{ms_line}'
+        f'{size_line}'
+        f'</div>'
     )
 
 st.markdown("".join(rows), unsafe_allow_html=True)
